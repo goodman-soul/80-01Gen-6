@@ -2,6 +2,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { useAuthStore } from "@/store/authStore";
+import type { UserRole } from "@/types";
 
 const titles: Record<string, { title: string; subtitle?: string }> = {
   "/dashboard": { title: "总览仪表盘", subtitle: "监控全部借展流程与环境状态" },
@@ -13,12 +14,40 @@ const titles: Record<string, { title: string; subtitle?: string }> = {
   "/external": { title: "借展文物状态", subtitle: "查看本展馆借到的文物" },
 };
 
+const roleAllowedRoutes: Record<UserRole, string[]> = {
+  curator: ["/dashboard", "/exhibitions", "/exhibitions/new", "/unpacking"],
+  warehouse: ["/dashboard", "/warehouse", "/exhibitions", "/unpacking"],
+  logistics: ["/dashboard", "/logistics", "/exhibitions", "/unpacking"],
+  external: ["/external", "/unpacking"],
+};
+
+const roleDefaultRoute: Record<UserRole, string> = {
+  curator: "/dashboard",
+  warehouse: "/dashboard",
+  logistics: "/dashboard",
+  external: "/external",
+};
+
+function checkRoutePermission(path: string, role: UserRole): boolean {
+  const allowed = roleAllowedRoutes[role];
+  if (allowed.includes(path)) return true;
+  if (path.startsWith("/exhibitions/") && path !== "/exhibitions/new") {
+    return true;
+  }
+  return false;
+}
+
 export function AppLayout() {
   const user = useAuthStore((s) => s.user);
   const location = useLocation();
 
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  const canAccess = checkRoutePermission(location.pathname, user.role);
+  if (!canAccess) {
+    return <Navigate to={roleDefaultRoute[user.role]} replace />;
   }
 
   const meta = titles[location.pathname] || { title: "文物借展平台" };

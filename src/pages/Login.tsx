@@ -26,17 +26,24 @@ const roleCards: { role: UserRole; icon: typeof Landmark; desc: string; hint: st
 export default function Login() {
   const [role, setRole] = useState<UserRole>("curator");
   const [username, setUsername] = useState("curator");
-  const [password, setPassword] = useState("123456");
+  const [password, setPassword] = useState("curator123");
   const [error, setError] = useState("");
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || "/dashboard";
 
+  const rolePasswords: Record<UserRole, string> = {
+    curator: "curator123",
+    warehouse: "warehouse123",
+    logistics: "logistics123",
+    external: "external123",
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    const res = login(role, username.trim());
+    const res = login(role, username.trim(), password);
     if (!res.ok) {
       setError(res.msg || "登录失败");
       return;
@@ -133,6 +140,7 @@ export default function Login() {
                       onClick={() => {
                         setRole(rc.role);
                         setUsername(rc.role);
+                        setPassword(rolePasswords[rc.role]);
                         setError("");
                       }}
                       className={classNames(
@@ -175,7 +183,7 @@ export default function Login() {
                 />
               </div>
               <p className="text-xs text-ink-400">
-                演示账号：<span className="font-mono text-bronze-600">{role}</span>（密码任意）
+                演示账号：<span className="font-mono text-bronze-600">{role}</span> / <span className="font-mono text-bronze-600">{rolePasswords[role]}</span>
               </p>
             </div>
 

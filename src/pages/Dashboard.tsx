@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import {
   LayoutDashboard,
   ScrollText,
@@ -52,6 +52,10 @@ const stats = [
 export default function Dashboard() {
   const exhibitions = useExhibitionStore((s) => s.exhibitions);
   const user = useAuthStore((s) => s.user);
+
+  if (user?.role === "external") {
+    return <Navigate to="/external" replace />;
+  }
 
   const data = {
     total: exhibitions.length,

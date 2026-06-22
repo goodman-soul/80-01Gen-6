@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { PackagePlus, Eye, Package } from "lucide-react";
 import { useExhibitionStore } from "@/store/exhibitionStore";
+import { useAuthStore } from "@/store/authStore";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
@@ -12,6 +13,11 @@ import { formatCurrency, formatDateTime, classNames } from "@/utils/format";
 export default function Warehouse() {
   const exhibitions = useExhibitionStore((s) => s.exhibitions);
   const confirmPacking = useExhibitionStore((s) => s.confirmPacking);
+  const user = useAuthStore((s) => s.user);
+
+  if (user?.role !== "warehouse" && user?.role !== "curator") {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const pending = exhibitions.filter((e) => e.status === "pending_packing");
   const packed = exhibitions.filter((e) => e.status !== "pending_packing" && e.packingRecord);

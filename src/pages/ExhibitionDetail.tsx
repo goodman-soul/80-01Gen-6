@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, Navigate } from "react-router-dom";
 import {
   ArrowLeft,
   PackageCheck,
@@ -71,14 +71,7 @@ export default function ExhibitionDetail() {
   }
 
   if (user?.role === "external" && user.museumId && ex.museumId !== user.museumId) {
-    return (
-      <div className="text-center py-20 text-ink-400">
-        <p>您无权查看此借展记录</p>
-        <Link to="/external" className="text-bronze-600 hover:underline text-sm mt-2 inline-block">
-          返回首页
-        </Link>
-      </div>
-    );
+    return <Navigate to="/external" replace />;
   }
 
   const isEnvAbnormal = (t: number, h: number) =>

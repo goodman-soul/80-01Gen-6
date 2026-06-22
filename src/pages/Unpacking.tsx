@@ -16,8 +16,21 @@ export default function Unpacking() {
   const addUnpackingRecord = useExhibitionStore((s) => s.addUnpackingRecord);
   const user = useAuthStore((s) => s.user);
 
-  const available = all.filter((e) => e.status !== "completed" && e.status !== "pending_packing");
+  const available = all.filter((e) => {
+    if (e.status === "completed" || e.status === "pending_packing") return false;
+    if (user?.role === "external" && user.museumId && e.museumId !== user.museumId) {
+      return false;
+    }
+    return true;
+  });
+
   const allRecords = all
+    .filter((ex) => {
+      if (user?.role === "external" && user.museumId && ex.museumId !== user.museumId) {
+        return false;
+      }
+      return true;
+    })
     .flatMap((ex) =>
       ex.unpackingRecords.map((r) => ({ ...r, artifactName: ex.artifactName, exhibitionId: ex.id }))
     )

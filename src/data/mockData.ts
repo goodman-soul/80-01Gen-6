@@ -4,28 +4,36 @@ import type {
   User,
 } from "@/types";
 
-export const mockUsers: User[] = [
+export interface MockUser extends User {
+  password: string;
+}
+
+export const mockUsers: MockUser[] = [
   {
     id: "u1",
     username: "curator",
+    password: "curator123",
     name: "张明远",
     role: "curator",
   },
   {
     id: "u2",
     username: "warehouse",
+    password: "warehouse123",
     name: "李守库",
     role: "warehouse",
   },
   {
     id: "u3",
     username: "logistics",
+    password: "logistics123",
     name: "王承运",
     role: "logistics",
   },
   {
     id: "u4",
     username: "external",
+    password: "external123",
     name: "苏馆长",
     role: "external",
     museumId: "m1",

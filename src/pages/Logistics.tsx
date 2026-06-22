@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import {
   Truck,
   ThermometerSun,
@@ -10,6 +10,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useExhibitionStore } from "@/store/exhibitionStore";
+import { useAuthStore } from "@/store/authStore";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
@@ -22,6 +23,11 @@ export default function Logistics() {
   const all = useExhibitionStore((s) => s.exhibitions);
   const addEnvironmentLog = useExhibitionStore((s) => s.addEnvironmentLog);
   const confirmSign = useExhibitionStore((s) => s.confirmSign);
+  const user = useAuthStore((s) => s.user);
+
+  if (user?.role !== "logistics" && user?.role !== "curator") {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const inTransit = all.filter((e) => e.status === "packed" || e.status === "in_transit");
   const toSign = all.filter((e) => e.status === "delivered");

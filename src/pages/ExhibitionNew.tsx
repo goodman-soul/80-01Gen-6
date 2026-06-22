@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft, Shield, ThermometerSun, Droplets, CalendarRange, Landmark, FileText } from "lucide-react";
 import { useExhibitionStore } from "@/store/exhibitionStore";
 import { useAuthStore } from "@/store/authStore";
@@ -13,6 +13,10 @@ export default function ExhibitionNew() {
   const navigate = useNavigate();
   const createExhibition = useExhibitionStore((s) => s.createExhibition);
   const user = useAuthStore((s) => s.user);
+
+  if (user?.role !== "curator") {
+    return <Navigate to="/dashboard" replace />;
+  }
   const [form, setForm] = useState({
     artifactNo: "",
     artifactName: "",
